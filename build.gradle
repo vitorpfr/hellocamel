@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+    implementation 'org.apache.camel:camel-core:3.14.0'
+    implementation 'org.apache.camel:camel-jms:3.14.0'
+    implementation 'org.apache.activemq:activemq-core:5.7.0'
+    implementation 'org.slf4j:slf4j-api:1.7.5'
+    implementation 'org.slf4j:slf4j-simple:1.6.4'
+    implementation 'org.apache.camel:camel-pulsar:3.14.0'
+//    implementation 'org.apache.pulsar:pulsar-client-admin:2.9.1'
+    implementation 'org.apache.pulsar:pulsar-client-admin-api:2.9.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// not being used, because we are not specifying the main class in the command line - left here as a reference only
+application {
+    mainClassName = project.hasProperty("mainClass") ? project.getProperty("mainClass") : "NULL"
+}
+
+task runJms(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class of the Jms package"
+    classpath = sourceSets.main.runtimeClasspath
+    main = "org.example.jms.CamelJmsApplication"
+}
+
+task runPulsar(type: JavaExec) {
+    group = "Execution"
+    description = "Run the main class of the Pulsar package"
+    classpath = sourceSets.main.runtimeClasspath
+    main = "org.example.pulsar.CamelPulsarApplication"
+}
