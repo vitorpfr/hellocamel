@@ -1,9 +1,8 @@
 package org.example.pulsar;
 
-import org.apache.camel.*;
+import org.apache.camel.CamelContext;
 import org.apache.camel.component.pulsar.PulsarComponent;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.pulsar.client.api.PulsarClient;
 import org.example.pulsar.config.PulsarConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +19,19 @@ public class CamelPulsarApplication {
 
         logger.info("adding component and routes");
         PulsarComponent pulsar = new PulsarComponent();
-        pulsar.setPulsarClient(
-                PulsarClient.builder()
-                .serviceUrl("pulsar://localhost:6650")
-                .build()
-        );
+        pulsar.setPulsarClient(config.getClient());
         context.addComponent("pulsar", pulsar);
         context.addRoutes(new Routes());
+
+        logger.info("start component");
         context.start();
+
+        logger.info("send test messages to queue, which will become a local file each on test-messages-pulsar folder");
+        Sender sender = new Sender();
+        sender.send10MessagesToTestQueue(context);
+
+        logger.info("stopping Camel application");
+        context.stop();
 
         //// WARNING: this whole section below deals with receiving and sending a message to a server. This is not being done here.
         //  get the endpoint from the camel context
@@ -48,12 +52,5 @@ public class CamelPulsarApplication {
         // stopping the JMS producer has the side effect of the "ReplyTo Queue" being properly
         // closed, making this client not to try any further reads for the replies from the server
 //        producer.stop();
-
-        // send test messages to queue, which will become a local file each on test-messages-pulsar folder
-        Sender sender = new Sender();
-        sender.send10MessagesToTestQueue(context);
-
-        logger.info("stopping Camel application");
-        context.stop();
     }
 }
