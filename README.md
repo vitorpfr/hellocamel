@@ -17,7 +17,7 @@ There are two tasks available: run the Camel service that uses either JMS/Active
 - To run the JMS/ActiveMQ example: `./gradlew runJms`
 - To run the Pulsar example: `./gradlew runPulsar`
 
-The Pulsar example requires the Apache Pulsar cluster running on Docker:
+The Pulsar example requires the Apache Pulsar broker running on Docker:
 ```
 docker run -it \
   -p 6650:6650 \
